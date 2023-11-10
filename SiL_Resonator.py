@@ -30,10 +30,13 @@ from matplotlib.patches import Wedge
 from matplotlib.collections import PatchCollection
 import matplotlib.cm as cm
 
+from Resonator import Resonator
+
 class_path = os.path.abspath(__file__)
 
 # Get the directory containing the script
 PyCORe_directory = os.path.dirname(class_path)
+
 
 class SiL_Resonator(Resonator):
     def __init__(self):

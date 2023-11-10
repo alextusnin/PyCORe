@@ -32,7 +32,7 @@ from Chains import CROW
 
 #%%
 
-def Plot_Map(map_data, detuning, xlabel='index', units = '', colormap = 'cubehelix'):
+def Plot_Map(map_data, detuning, S=[0],kappa_ex=0,output='field',colormap = 'cubehelix'):
     dOm = detuning[1]-detuning[0]
     dt=1
    
@@ -96,7 +96,7 @@ def Plot_Map(map_data, detuning, xlabel='index', units = '', colormap = 'cubehel
         ix, iy = event.xdata, event.ydata
         x = int(np.floor((ix-detuning.min())/dOm))
         max_val = (abs(map_data[x,:])**2).max()
-        plt.suptitle('Chosen x axis value = %f'%np.round(ix,3) + ' '+units, fontsize=20)
+        plt.suptitle('Chosen detuning '+r'$\zeta_0$'+ '= %f'%ix, fontsize=20)
         ax.lines.pop(0)
         ax.plot([ix,ix], [-np.pi, np.pi ],'r')
 
@@ -117,20 +117,24 @@ def Plot_Map(map_data, detuning, xlabel='index', units = '', colormap = 'cubehel
         ax3.grid(True)
         
         ax4 = plt.subplot2grid((5, 1), (4, 0))            
-        ax4.plot(mu,10*np.log10(abs(np.fft.fftshift(np.fft.fft(map_data[x,:])))**2/(abs(np.fft.fft(map_data[x,:]))**2).max()),'-o', color='black',markersize=3)
-        ax4.set_ylabel('Spectrum, dB')
-        ax4.set_xlim(mu.min(),mu.max())
-        ax4.set_ylim(bottom=-150)
-        
-        ax4.set_xlim(mu.min()+10,mu.max()-10)
-        #ax4.autoscale(enable=None, axis="x", tight=True)
+        if output=='field':            
+            ax4.plot(mu,10*np.log10(abs(np.fft.fftshift(np.fft.fft(map_data[x,:])))**2/(abs(np.fft.fft(map_data[x,:]))**2).max()), '-o',color='black',markersize=3)
+            ax4.set_ylabel('Spectrum, dB')
+            ax4.set_xlim(mu.min(),mu.max())
+        else:
+            trans = S - np.sqrt(kappa_ex)*np.fft.fft(map_data[x,:])
+            ax4.plot(mu,10*np.log10(abs(np.fft.fftshift(trans))**2/abs(S[0])**2), '-o',color='black',markersize=3)
+            ax4.set_ylim(-100,1)
+            ax4.set_ylabel('Spectrum, dBc')
+            ax4.set_xlim(mu.min(),mu.max())
+        #ax4.set_ylim(-100,3)   
         plt.show()
         f.canvas.draw()
         
     
     f = plt.figure()
     ax = plt.subplot2grid((5, 1), (0, 0), rowspan=2)
-    #plt.suptitle('Choose the detuning', fontsize=20)
+    plt.suptitle('Choose the detuning', fontsize=20)
     f.set_size_inches(10,8)
     phi = np.linspace(-np.pi,np.pi,map_data[0,:].size)
 #    orig_cmap = plt.get_cmap('viridis')
@@ -147,7 +151,7 @@ def Plot_Map(map_data, detuning, xlabel='index', units = '', colormap = 'cubehel
     if (x<0) or (x>detuning.size):
         x = 0
     max_val = (abs(map_data[x,:])**2).max()
-    plt.suptitle('Chosen x axis value = %f'%np.round(ix,3) + ' '+units, fontsize=20)
+    plt.suptitle('Chosen detuning '+r'$\zeta_0$'+ '= %f km'%ix, fontsize=20)
     ax.lines.pop(0)
     
     ax.plot([ix,ix], [-np.pi, np.pi ],'r')
@@ -167,17 +171,21 @@ def Plot_Map(map_data, detuning, xlabel='index', units = '', colormap = 'cubehel
     ax3.yaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
     ax3.yaxis.set_major_formatter(ticker.FormatStrFormatter('%g $\pi$'))
     ax3.grid(True)
-    ax4 = plt.subplot2grid((5, 1), (4, 0))            
-    ax4.plot(mu,10*np.log10(abs(np.fft.fftshift(np.fft.fft(map_data[x,:])))**2/(abs(np.fft.fft(map_data[x,:]))**2).max()), '-o',color='black',markersize=3)
-    ax4.set_ylabel('Spectrum, dB')
-    ax4.set_xlim(mu.min()+10,mu.max()-10)
-    ax4.set_ylim(bottom=-150)     
-    
-    #ax4.autoscale(enable=None, axis="x", tight=True)
+    ax4 = plt.subplot2grid((5, 1), (4, 0))
+    if output=='field':            
+        ax4.plot(mu,10*np.log10(abs(np.fft.fftshift(np.fft.fft(map_data[x,:])))**2/(abs(np.fft.fft(map_data[x,:]))**2).max()), '-o',color='black',markersize=3)
+        ax4.set_ylabel('Spectrum, dB')
+        ax4.set_xlim(mu.min(),mu.max())
+    else:
+        trans = S - np.sqrt(kappa_ex)*np.fft.fft(map_data[x,:])
+        ax4.plot(mu,10*np.log10(abs(np.fft.fftshift(trans))**2/abs(S[0])**2), '-o',color='black',markersize=3)
+        ax4.set_ylim(-100,1)
+        ax4.set_ylabel('Spectrum, dBc')
+        ax4.set_xlim(mu.min(),mu.max())
+    #ax4.set_ylim(-50,3)        
 #    f.colorbar(pc)
     plt.subplots_adjust(left=0.07, bottom=0.07, right=0.95, top=0.93, wspace=None, hspace=0.4)
     f.canvas.mpl_connect('button_press_event', onclick)                
-
 
 """
 here is a set of useful standard functions

@@ -97,5 +97,5 @@ pcm.Plot_Map(np.fft.ifft(map2d,axis=1),np.arange(nn))
 #np.save('dOm_scan',dOm,allow_pickle=True)
 
 #%%
-single_ring.Save_Data(map2d,Pump,simulation_parameters,dOm,'./data/')
+#single_ring.Save_Data(map2d,Pump,simulation_parameters,dOm,'./data/')
 print("--- %s seconds ---" % (time.time() - start_time))
