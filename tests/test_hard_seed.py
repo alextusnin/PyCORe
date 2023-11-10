@@ -36,11 +36,11 @@ map2d_scan = np.zeros([],dtype=complex)#np.load('map2d_scan.npy')
 dOm_scan = np.zeros([])
 Pump=np.zeros([],dtype=complex)
 simulation_parameters={}
-#device = pcm.Resonator()
-device=pcm.CROW()
+device = pcm.Resonator()
+#device=pcm.CROW()
 simulation_parameters,map2d_scan,dOm_scan,Pump=device.Init_From_File('./data/')
 
-idet = 12500
+idet = 1500
 nn = 30000
 dOm = np.ones(nn)*dOm_scan[idet]
 simulation_parameters['slow_time']=1e-6
@@ -55,7 +55,8 @@ Seed = map2d_scan[idet,:]
 #map2d = device.Propagate_SAM(simulation_parameters, Pump)
 #map2d = device.Propagate_SplitStepCLIB(simulation_parameters, Pump,Seed=Seed,dt=0.5e-3, HardSeed=True)
 #map2d = device.Propagate_SAMCLIB(simulation_parameters, Pump,Seed=Seed,HardSeed=True,BC='OPEN')
-map2d = device.Propagate_PSEUDO_SPECTRAL_SAMCLIB(simulation_parameters, Pump,Seed=Seed,HardSeed=True, BC='OPEN')
+#map2d = device.Propagate_PSEUDO_SPECTRAL_SAMCLIB(simulation_parameters, Pump,Seed=Seed,HardSeed=True, BC='OPEN')
+map2d = device.Propagate_PseudoSpectralSAMCLIB(simulation_parameters, Pump,Seed=Seed,HardSeed=True,dt=0.5e-3,lib='NR')
 #map2d = device.Propagate_SAMCLIB(simulation_parameters, Pump,Seed=Seed,HardSeed=True)
 #map2d = device.Propagate_SplitStep(simulation_parameters, Pump,dt=1e-3)
 #%%
@@ -69,9 +70,9 @@ map2d = device.Propagate_PSEUDO_SPECTRAL_SAMCLIB(simulation_parameters, Pump,See
 pcm.Plot_Map(np.fft.ifft(map2d[:,:,0],axis=1),np.arange(dOm.size))
 print("--- %s seconds ---" % (time.time() - start_time))
 #%%
-#res,rel_diff = device.NewtonRaphsonFixedD1(map2d[-1,:],dOm[-1],Pump,tol=1e-6,max_iter=25)
+res,rel_diff = device.NewtonRaphsonFixedD1(map2d[-1,:],dOm[-1],Pump,tol=1e-6,max_iter=25)
 #%%
-#eig_vals, eig_vecs = device.LinearStability(res,dOm[-1])
+eig_vals, eig_vecs = device.LinearStability(res,dOm[-1])
 #%%
 #GoldStone_index = np.argmax(np.real(eig_vals))
 #GoldStone_mode = eig_vecs[:,np.argmax(np.real(eig_vals))]

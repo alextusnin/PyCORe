@@ -67,7 +67,7 @@ single_ring.Init_From_Dict(PhysicalParameters)
 #map2d = single_ring.Propagate_SAM_NEW(simulation_parameters, Pump)
 #map2d = single_ring.Propagate_SplitStepCLIB(simulation_parameters, Pump,dt=0.5e-3)
 #map2d = single_ring.Propagate_SAMCLIB(simulation_parameters, Pump,dt=0.5e-3)
-map2d = single_ring.Propagate_PseudoSpectralSAMCLIB(simulation_parameters, Pump,dt=0.5e-3,lib='boost')
+map2d = single_ring.Propagate_PseudoSpectralSAMCLIB(simulation_parameters, Pump,dt=0.5e-3,lib='NR')
 
 #%%
 #map2d = single_ring.Propagate_SplitStep(simulation_parameters, Pump,dt=1e-3)
@@ -97,5 +97,5 @@ pcm.Plot_Map(np.fft.ifft(map2d,axis=1),np.arange(nn))
 #np.save('dOm_scan',dOm,allow_pickle=True)
 
 #%%
-#single_ring.Save_Data(map2d,Pump,simulation_parameters,dOm,'./data/')
+single_ring.Save_Data(map2d,Pump,simulation_parameters,dOm,'./data/')
 print("--- %s seconds ---" % (time.time() - start_time))
